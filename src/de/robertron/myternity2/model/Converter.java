@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-
+import java.util.StringTokenizer;
 
 public class Converter {
 
@@ -25,4 +25,30 @@ public class Converter {
 		return null;
 	}
 
+	private static Piece[] convert( final String line, final int size ) {
+		final StringTokenizer stok = new StringTokenizer( line );
+
+		int i = 0;
+		while ( stok.hasMoreTokens() ) {
+			Piece piece;
+			final String token = stok.nextToken();
+			if ( i % 4 == 0 ) {
+				piece = new Piece();
+			}
+			if ( i % 4 == 1 ) {
+
+			}
+			if ( i % 4 == 2 ) {
+
+			}
+			if ( i % 4 == 3 ) {
+
+			}
+
+			System.out.println( token );
+			i++;
+		}
+		return null;
+
+	}
 }
