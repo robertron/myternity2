@@ -5,50 +5,62 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Converter {
 
-	public static Board load( final File file )
+	public static Board loadBoard( final File file, final int size )
 			throws FileNotFoundException, IOException {
-		final StringBuffer buffer = new StringBuffer();
+		return Board.from( load( file, size ) );
+	}
 
+	public static List<Piece> loadPieces( final File file, final int size )
+			throws FileNotFoundException, IOException {
+		final List<Piece> result = new ArrayList<Piece>();
+
+		final Piece[][] pieces = load( file, size );
+		for ( final Piece[] row : pieces ) {
+			for ( final Piece piece : row ) {
+				result.add( piece );
+			}
+		}
+
+		return result;
+	}
+
+	private static Piece[][] load( final File file, final int size )
+			throws FileNotFoundException, IOException {
 		final LineNumberReader lnr = new LineNumberReader( new FileReader( file ) );
+		final Piece[][] rows = new Piece[size][];
 
 		String line = lnr.readLine();
 
+		int i = 0;
 		while ( line != null ) {
-			buffer.append( line );
-			buffer.append( '\n' );
+			rows[i] = convert( line, size );
 			line = lnr.readLine();
+			i++;
 		}
-		return null;
+		return rows;
 	}
 
 	private static Piece[] convert( final String line, final int size ) {
 		final StringTokenizer stok = new StringTokenizer( line );
+		final Piece[] pieces = new Piece[size];
 
 		int i = 0;
 		while ( stok.hasMoreTokens() ) {
-			Piece piece;
-			final String token = stok.nextToken();
-			if ( i % 4 == 0 ) {
-				piece = new Piece();
-			}
-			if ( i % 4 == 1 ) {
+			final Integer north = Integer.valueOf( stok.nextToken() );
+			final Integer east = Integer.valueOf( stok.nextToken() );
+			final Integer south = Integer.valueOf( stok.nextToken() );
+			final Integer west = Integer.valueOf( stok.nextToken() );
 
-			}
-			if ( i % 4 == 2 ) {
-
-			}
-			if ( i % 4 == 3 ) {
-
-			}
-
-			System.out.println( token );
+			pieces[i] = Piece.from( north, east, south, west );
 			i++;
 		}
-		return null;
+		return pieces;
 
 	}
 }
