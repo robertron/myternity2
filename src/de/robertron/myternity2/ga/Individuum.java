@@ -1,13 +1,14 @@
 package de.robertron.myternity2.ga;
 
-import de.robertron.myternity2.model.Board;
+import java.util.List;
 
-public class Individuum {
+public interface Individuum<T extends Gene> {
 
-	private Board board;
+	List<T> getGenes();
 
-	public int getFitness() {
-		return 0;
-	}
+	int getFitness();
 
+	void mutate( final double mutationProbability );
+
+	List<T> cross( final List<T> genes );
 }

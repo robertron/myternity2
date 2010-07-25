@@ -13,20 +13,25 @@ public class Converter {
 
 	public static Board loadBoard( final File file, final int size )
 			throws FileNotFoundException, IOException {
-		return Board.from( load( file, size ) );
+		return Board.from( load( file, size ), size );
 	}
 
 	public static List<Piece> loadPieces( final File file, final int size )
 			throws FileNotFoundException, IOException {
-		final List<Piece> result = new ArrayList<Piece>();
 
 		final Piece[][] pieces = load( file, size );
+		final List<Piece> result = convert( pieces );
+
+		return result;
+	}
+
+	public static List<Piece> convert( final Piece[][] pieces ) {
+		final List<Piece> result = new ArrayList<Piece>();
 		for ( final Piece[] row : pieces ) {
 			for ( final Piece piece : row ) {
 				result.add( piece );
 			}
 		}
-
 		return result;
 	}
 
@@ -39,14 +44,14 @@ public class Converter {
 
 		int i = 0;
 		while ( line != null ) {
-			rows[i] = convert( line, size );
+			rows[i] = parse( line, size, i );
 			line = lnr.readLine();
 			i++;
 		}
 		return rows;
 	}
 
-	private static Piece[] convert( final String line, final int size ) {
+	private static Piece[] parse( final String line, final int size, final int linenumber ) {
 		final StringTokenizer stok = new StringTokenizer( line );
 		final Piece[] pieces = new Piece[size];
 
@@ -57,7 +62,7 @@ public class Converter {
 			final Integer south = Integer.valueOf( stok.nextToken() );
 			final Integer west = Integer.valueOf( stok.nextToken() );
 
-			pieces[i] = Piece.from( north, east, south, west );
+			pieces[i] = Piece.from( north, east, south, west, ( linenumber * size ) + i );
 			i++;
 		}
 		return pieces;

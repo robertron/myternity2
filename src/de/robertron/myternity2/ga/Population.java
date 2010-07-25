@@ -1,11 +1,15 @@
 package de.robertron.myternity2.ga;
 
-public class Population {
+public interface Population<K extends Gene, T extends Individuum<K>> {
 
-	private Individuum[] individuums;
+	Population<K, T> initial( final int populationSize );
 
-	public int getEvaluation() {
-		return 0;
-	}
+	void mutate( double probability );
+
+	boolean finished( int runs, int winningFitness );
+
+	void select( int elite );
+
+	void cross( double fraction, double probability );
 
 }
