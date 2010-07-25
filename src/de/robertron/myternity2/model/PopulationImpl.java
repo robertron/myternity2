@@ -12,7 +12,7 @@ import de.robertron.myternity2.ga.Individuum;
 import de.robertron.myternity2.ga.Population;
 
 public class PopulationImpl
-		implements Population<Piece, Board> {
+		implements Population<Piece, Individuum<Piece>> {
 
 	private final int turnamentSize;
 	private final File file;
@@ -47,7 +47,7 @@ public class PopulationImpl
 	}
 
 	@Override
-	public Population<Piece, Board> initial( final int populationSize ) {
+	public Population<Piece, Individuum<Piece>> initial( final int populationSize ) {
 		try {
 			final List<Piece> pieces = Converter.loadPieces( file, boardSize );
 			for ( int i = 0; i < populationSize; i++ ) {

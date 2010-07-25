@@ -43,7 +43,15 @@ public class Piece
 	}
 
 	public void rotate() {
+		final int north = map.get( Direction.NORTH );
+		final int south = map.get( Direction.SOUTH );
+		final int east = map.get( Direction.EAST );
+		final int west = map.get( Direction.WEST );
 
+		map.put( Direction.EAST, north );
+		map.put( Direction.SOUTH, east );
+		map.put( Direction.WEST, south );
+		map.put( Direction.NORTH, west );
 	}
 
 	@Override

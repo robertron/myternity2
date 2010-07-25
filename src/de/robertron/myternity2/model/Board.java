@@ -30,6 +30,7 @@ public class Board
 			for ( int j = 0; j < boardSize; j++ ) {
 				row[j] = pieces.get( count++ );
 			}
+			result[i] = row;
 		}
 
 		return new Board( result, boardSize );
@@ -43,8 +44,72 @@ public class Board
 
 	@Override
 	public int getFitness() {
-		// TODO Auto-generated method stub
+		int y = 0;
+		int fitness = 0;
+		for ( final Piece[] row : pieces ) {
+			int x = 0;
+			for ( final Piece piece : row ) {
+				fitness += fitting( piece, getNorth( x, y ), getSouth( x, y ), getEast( x, y ),
+						getWest( x, y ) );
+				x++;
+			}
+			y++;
+		}
+
+		return fitness;
+	}
+
+	private int fitting( final Piece piece, final Piece north, final Piece south, final Piece east,
+			final Piece west ) {
+		final boolean n = check( piece, north, Direction.NORTH );
+		final boolean s = check( piece, south, Direction.SOUTH );
+		final boolean e = check( piece, east, Direction.EAST );
+		final boolean w = check( piece, west, Direction.WEST );
+
+		if ( n && s && e && w ) {
+			return 1;
+		}
 		return 0;
+	}
+
+	private boolean check( final Piece piece, final Piece check, final Direction direction ) {
+		final int first = piece.get( direction );
+		if ( check == null ) {
+			return first == 0;
+		}
+		return first == check.get( direction );
+	}
+
+	private Piece getNorth( final int x, final int y ) {
+		if ( y == 0 ) {
+			return null;
+		}
+
+		return pieces[y - 1][x];
+	}
+
+	private Piece getWest( final int x, final int y ) {
+		if ( x == 0 ) {
+			return null;
+		}
+
+		return pieces[y][x - 1];
+	}
+
+	private Piece getSouth( final int x, final int y ) {
+		if ( y == boardSize - 1 ) {
+			return null;
+		}
+
+		return pieces[y + 1][x];
+	}
+
+	private Piece getEast( final int x, final int y ) {
+		if ( x == boardSize - 1 ) {
+			return null;
+		}
+
+		return pieces[y][x + 1];
 	}
 
 	@Override
@@ -67,15 +132,15 @@ public class Board
 		final int y1 = randomCoordinate();
 		final int x2 = randomCoordinate();
 		final int y2 = randomCoordinate();
-		final Piece piece = pieces[x1][y1];
-		pieces[x1][y1] = pieces[x2][y2];
-		pieces[x2][y2] = piece;
+		final Piece piece = pieces[y1][x1];
+		pieces[y1][x1] = pieces[y2][x2];
+		pieces[y2][x2] = piece;
 	}
 
 	private void rotate() {
 		final int x = randomCoordinate();
 		final int y = randomCoordinate();
-		pieces[x][y].rotate();
+		pieces[y][x].rotate();
 
 	}
 
@@ -88,13 +153,13 @@ public class Board
 		final List<Piece> changed = new ArrayList<Piece>();
 
 		for ( final Piece change : genes ) {
-			int x = 0;
 			int y = 0;
 			for ( final Piece[] row : pieces ) {
+				int x = 0;
 				for ( final Piece piece : row ) {
 					if ( piece.getId() == change.getId() ) {
-						changed.add( pieces[x][y] );
-						pieces[x][y] = change;
+						changed.add( pieces[y][x] );
+						pieces[y][x] = change;
 					}
 					x++;
 				}
