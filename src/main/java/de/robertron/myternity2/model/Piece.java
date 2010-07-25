@@ -11,7 +11,7 @@ public class Piece
 	private final Map<Direction, Integer> map = new HashMap<Direction, Integer>();
 	private final int id;
 
-	private Piece( final int north, final int east, final int south, final int west, final int id ) {
+	private Piece( final int north, final int west, final int south, final int east, final int id ) {
 		this.id = id;
 		map.put( Direction.NORTH, north );
 		map.put( Direction.EAST, east );

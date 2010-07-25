@@ -11,8 +11,8 @@ public class GaUtil {
 
 		@Override
 		public int compare( final Individuum<?> individuum1, final Individuum<?> individuum2 ) {
-			return Integer.valueOf( individuum1.getFitness() ).compareTo(
-					Integer.valueOf( individuum2.getFitness() ) );
+			return Integer.valueOf( individuum1.fitness() ).compareTo(
+					Integer.valueOf( individuum2.fitness() ) );
 		}
 	}
 
@@ -24,14 +24,13 @@ public class GaUtil {
 		return random( min * scale, max * scale ) / scale;
 	}
 
-	public static <T extends Gene> Individuum<T> tournament( final List<Individuum<T>> individuums,
-			final int turnamentSize ) {
-		Individuum<T> best = individuums.get( (int) GaUtil.random( 0, individuums.size() - 1 ) );
+	public static <K extends Gene, T extends Individuum<K>> T tournament(
+			final List<T> individuums, final int turnamentSize ) {
+		T best = individuums.get( (int) GaUtil.random( 0, individuums.size() - 1 ) );
 		int run = turnamentSize - 1;
 		while ( run > 0 ) {
-			final Individuum<T> ind = individuums.get( (int) GaUtil.random( 0,
-					individuums.size() - 1 ) );
-			if ( ind.getFitness() > best.getFitness() ) {
+			final T ind = individuums.get( (int) GaUtil.random( 0, individuums.size() - 1 ) );
+			if ( ind.fitness() > best.fitness() ) {
 				best = ind;
 			}
 			run--;
@@ -39,13 +38,14 @@ public class GaUtil {
 		return best;
 	}
 
-	public static <T extends Gene> int maximalFitness( final List<Individuum<T>> individuums ) {
-		final Individuum<T> individuum = Collections.max( individuums, new FITNESS_COMPARATOR() );
-		return individuum.getFitness();
+	public static <K extends Gene, T extends Individuum<K>> int maximalFitness(
+			final List<T> individuums ) {
+		final T individuum = Collections.max( individuums, new FITNESS_COMPARATOR() );
+		return individuum.fitness();
 	}
 
-	public static <T extends Gene> List<Individuum<T>> best( final List<Individuum<T>> individuums,
-			final int n ) {
+	public static <K extends Gene, T extends Individuum<K>> List<T> best(
+			final List<T> individuums, final int n ) {
 		Collections.sort( individuums, new FITNESS_COMPARATOR() );
 		return individuums.subList( 0, n );
 	}

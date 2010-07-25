@@ -3,7 +3,6 @@ package de.robertron.myternity2.ga;
 public class GeneticAlgorithm {
 
 	private int elite;
-	private int popsize;
 	private int runs;
 	private final int winningFitness;
 	private double crossoverFraction;
@@ -12,29 +11,26 @@ public class GeneticAlgorithm {
 
 	public GeneticAlgorithm( final int winningFitness ) {
 		this.winningFitness = winningFitness;
-		this.elite = 5;
-		this.popsize = 30;
-		this.runs = 20;
-		this.crossoverFraction = 0.3;
-		this.mutationProbability = 0.1;
-		this.crossoverProbability = 0.5;
+		this.elite = 0;
+		this.runs = 10;
+		this.crossoverFraction = 0.4;
+		this.mutationProbability = 0.5;
+		this.crossoverProbability = 0.2;
 	}
 
 	public void evolution( final Population<?, ?> prototype ) {
-		final Population<?, ?> pop = prototype.initial( popsize );
+		final Population<?, ?> pop = prototype.initial();
+		pop.calculate();
 		while ( !pop.finished( runs, winningFitness ) ) {
 			pop.select( elite );
 			pop.cross( crossoverFraction, crossoverProbability );
 			pop.mutate( mutationProbability );
+			pop.calculate();
 		}
 	}
 
 	public void setElite( final int elite ) {
 		this.elite = elite;
-	}
-
-	public void setPopsize( final int popsize ) {
-		this.popsize = popsize;
 	}
 
 	public void setRuns( final int runs ) {

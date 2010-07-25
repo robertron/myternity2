@@ -1,7 +1,9 @@
 package de.robertron.myternity2.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.robertron.myternity2.ga.GaUtil;
 import de.robertron.myternity2.ga.Individuum;
@@ -11,10 +13,12 @@ public class Board
 
 	private final Piece[][] pieces;
 	private final int boardSize;
+	private int fitness;
 
 	private Board( final Piece[][] pieces, final int boardSize ) {
 		this.pieces = pieces;
 		this.boardSize = boardSize;
+		this.fitness = 0;
 	}
 
 	public static Board from( final Piece[][] pieces, final int boardSize ) {
@@ -38,12 +42,23 @@ public class Board
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		final StringBuilder builder = new StringBuilder();
+		for ( final Piece[] row : pieces ) {
+			for ( final Piece piece : row ) {
+				builder.append( piece ).append( "\t" );
+			}
+			builder.append( "\n" );
+		}
+		return builder.toString();
 	}
 
 	@Override
-	public int getFitness() {
+	public int fitness() {
+		return fitness;
+	}
+
+	@Override
+	public void calculate() {
 		int y = 0;
 		int fitness = 0;
 		for ( final Piece[] row : pieces ) {
@@ -56,7 +71,8 @@ public class Board
 			y++;
 		}
 
-		return fitness;
+		this.fitness = fitness;
+
 	}
 
 	private int fitting( final Piece piece, final Piece north, final Piece south, final Piece east,
@@ -77,7 +93,7 @@ public class Board
 		if ( check == null ) {
 			return first == 0;
 		}
-		return first == check.get( direction );
+		return first == check.get( direction.getOpposite() );
 	}
 
 	private Piece getNorth( final int x, final int y ) {
@@ -89,11 +105,11 @@ public class Board
 	}
 
 	private Piece getWest( final int x, final int y ) {
-		if ( x == 0 ) {
+		if ( x == boardSize - 1 ) {
 			return null;
 		}
 
-		return pieces[y][x - 1];
+		return pieces[y][x + 1];
 	}
 
 	private Piece getSouth( final int x, final int y ) {
@@ -105,11 +121,11 @@ public class Board
 	}
 
 	private Piece getEast( final int x, final int y ) {
-		if ( x == boardSize - 1 ) {
+		if ( x == 0 ) {
 			return null;
 		}
 
-		return pieces[y][x + 1];
+		return pieces[y][x - 1];
 	}
 
 	@Override
@@ -172,6 +188,19 @@ public class Board
 	@Override
 	public List<Piece> getGenes() {
 		return Converter.convert( pieces );
+	}
+
+	public boolean sane() {
+		final Set<Integer> hash = new HashSet<Integer>();
+		for ( final Piece[] row : pieces ) {
+			for ( final Piece piece : row ) {
+				if ( hash.contains( piece.getId() ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 }

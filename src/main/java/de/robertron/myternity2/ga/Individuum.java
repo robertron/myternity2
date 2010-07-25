@@ -6,9 +6,11 @@ public interface Individuum<T extends Gene> {
 
 	List<T> getGenes();
 
-	int getFitness();
+	int fitness();
 
 	void mutate( final double mutationProbability );
 
 	List<T> cross( final List<T> genes );
+
+	void calculate();
 }

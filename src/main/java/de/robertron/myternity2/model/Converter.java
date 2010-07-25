@@ -58,11 +58,11 @@ public class Converter {
 		int i = 0;
 		while ( stok.hasMoreTokens() ) {
 			final Integer north = Integer.valueOf( stok.nextToken() );
-			final Integer east = Integer.valueOf( stok.nextToken() );
-			final Integer south = Integer.valueOf( stok.nextToken() );
 			final Integer west = Integer.valueOf( stok.nextToken() );
+			final Integer south = Integer.valueOf( stok.nextToken() );
+			final Integer east = Integer.valueOf( stok.nextToken() );
 
-			pieces[i] = Piece.from( north, east, south, west, ( linenumber * size ) + i );
+			pieces[i] = Piece.from( north, west, south, east, ( linenumber * size ) + i );
 			i++;
 		}
 		return pieces;

@@ -12,32 +12,35 @@ import de.robertron.myternity2.ga.Individuum;
 import de.robertron.myternity2.ga.Population;
 
 public class PopulationImpl
-		implements Population<Piece, Individuum<Piece>> {
+		implements Population<Piece, Board> {
 
 	private final int turnamentSize;
 	private final File file;
 	private final int boardSize;
-	private List<Individuum<Piece>> individuums;
+	private List<Board> individuums;
 	private int run;
+	private final int popsize;
 
-	public PopulationImpl( final int boardSize, final int turnamentSize, final File file ) {
+	public PopulationImpl( final int boardSize, final int turnamentSize, final int popsize,
+			final File file ) {
 		this.turnamentSize = turnamentSize;
+		this.popsize = popsize;
 		this.file = file;
 		this.boardSize = boardSize;
-		this.individuums = new ArrayList<Individuum<Piece>>();
+		this.individuums = new ArrayList<Board>();
 		run = 0;
 	}
 
 	@Override
 	public void select( final int elite ) {
-		final List<Individuum<Piece>> newIndividuums = new ArrayList<Individuum<Piece>>();
+		final List<Board> newIndividuums = new ArrayList<Board>();
 		int size = individuums.size();
 		if ( elite > 0 ) {
-			final List<Individuum<Piece>> best = GaUtil.best( this.individuums, elite );
+			final List<Board> best = GaUtil.best( this.individuums, elite );
 			newIndividuums.addAll( best );
-			size--;
+			size -= best.size();
 		}
-		while ( size >= 0 ) {
+		while ( size > 0 ) {
 			newIndividuums.add( GaUtil.tournament( this.individuums, turnamentSize ) );
 			size--;
 		}
@@ -47,10 +50,10 @@ public class PopulationImpl
 	}
 
 	@Override
-	public Population<Piece, Individuum<Piece>> initial( final int populationSize ) {
+	public Population<Piece, Board> initial() {
 		try {
 			final List<Piece> pieces = Converter.loadPieces( file, boardSize );
-			for ( int i = 0; i < populationSize; i++ ) {
+			for ( int i = 0; i < popsize; i++ ) {
 				Collections.shuffle( pieces );
 				individuums.add( Board.from( pieces, boardSize ) );
 			}
@@ -93,9 +96,49 @@ public class PopulationImpl
 		}
 	}
 
+	final boolean sane() {
+		for ( final Board board : individuums ) {
+			if ( !board.sane() ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public boolean finished( final int runs, final int winningFitness ) {
-		return run > runs || GaUtil.maximalFitness( individuums ) >= winningFitness;
+		final int maximalFitness = GaUtil.maximalFitness( individuums );
+		System.out.println( "CHECK POPULATION: BEST: " + maximalFitness + " RUN: " + run );
+
+		if ( !sane() || individuums.size() != popsize ) {
+			System.err.println( "ERROR: Population insane" );
+			return true;
+		}
+
+		if ( run > runs || maximalFitness >= winningFitness ) {
+			log();
+			return true;
+		}
+
+		return false;
+	}
+
+	public void log() {
+		int i = 0;
+		for ( final Board board : individuums ) {
+			System.out.println( "--------------------------------" );
+			System.out.println( "--- BOARD: " + i + " FITNESS: " + board.fitness() );
+			System.out.println( "--------------------------------" );
+			System.out.println( board );
+			i++;
+		}
+	}
+
+	@Override
+	public void calculate() {
+		for ( final Individuum<Piece> individuum : this.individuums ) {
+			individuum.calculate();
+		}
 	}
 
 }
