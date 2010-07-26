@@ -1,24 +1,23 @@
 package de.robertron.myternity2.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.robertron.myternity2.ga.Copyable;
 import de.robertron.myternity2.ga.Gene;
 
 public class Piece
-		implements Gene, Copyable<Piece> {
+		implements Gene, Copyable<Piece>, Cloneable {
 
-	private final Map<Direction, Integer> map;
+	private static final int directionCount = Direction.values().length;
+
+	private final int[] map;
 	private final int id;
 
 	private Piece( final int north, final int west, final int south, final int east, final int id ) {
-		map = new HashMap<Direction, Integer>();
+		map = new int[directionCount];
 		this.id = id;
-		map.put( Direction.NORTH, north );
-		map.put( Direction.EAST, east );
-		map.put( Direction.SOUTH, south );
-		map.put( Direction.WEST, west );
+		map[Direction.NORTH.ordinal()] = north;
+		map[Direction.EAST.ordinal()] = east;
+		map[Direction.SOUTH.ordinal()] = south;
+		map[Direction.WEST.ordinal()] = west;
 	}
 
 	public static Piece from( final int north, final int east, final int south, final int west,
@@ -29,31 +28,27 @@ public class Piece
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append( map.get( Direction.NORTH ) ).append( " " );
-		builder.append( map.get( Direction.EAST ) ).append( " " );
-		builder.append( map.get( Direction.SOUTH ) ).append( " " );
-		builder.append( map.get( Direction.WEST ) );
+		builder.append( get( Direction.NORTH ) ).append( " " );
+		builder.append( get( Direction.EAST ) ).append( " " );
+		builder.append( get( Direction.SOUTH ) ).append( " " );
+		builder.append( get( Direction.WEST ) );
 		return builder.toString();
 	}
 
 	public void set( final Direction direction, final int value ) {
-		map.put( direction, value );
+		map[direction.ordinal()] = value;
 	}
 
 	public int get( final Direction direction ) {
-		return map.get( direction );
+		return map[direction.ordinal()];
 	}
 
 	public void rotate() {
-		final int north = map.get( Direction.NORTH );
-		final int south = map.get( Direction.SOUTH );
-		final int east = map.get( Direction.EAST );
-		final int west = map.get( Direction.WEST );
-
-		map.put( Direction.EAST, north );
-		map.put( Direction.SOUTH, east );
-		map.put( Direction.WEST, south );
-		map.put( Direction.NORTH, west );
+		final int south = get( Direction.SOUTH );
+		set( Direction.SOUTH, get( Direction.EAST ) );
+		set( Direction.EAST, get( Direction.NORTH ) );
+		set( Direction.NORTH, get( Direction.WEST ) );
+		set( Direction.WEST, south );
 	}
 
 	@Override
@@ -63,11 +58,11 @@ public class Piece
 
 	@Override
 	public Piece copy() {
-		final int north = map.get( Direction.NORTH );
-		final int east = map.get( Direction.EAST );
-		final int south = map.get( Direction.SOUTH );
-		final int west = map.get( Direction.WEST );
-		return new Piece( north, west, south, east, this.id );
+		try {
+			return (Piece) clone();
+		} catch ( CloneNotSupportedException e ) {
+			throw new RuntimeException( e ); // can't occur
+		}
 	}
 
 }
