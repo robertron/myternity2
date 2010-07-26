@@ -1,0 +1,21 @@
+<project name="Myternity2" default="run" basedir="">
+    <property name="lib" location="lib"/>
+    <property name="src" location="src"/>
+    <property name="dest" location="bin"/>
+   	
+    <path id="project-classpath">
+        <path location="bin"/>
+        <pathelement location="lib/junit-4.8.1.jar"/>
+    </path>
+    
+    <target name="run" depends="compile">
+        <java classname="de.robertron.myternity2.Myternity2" fork="true">
+            <classpath refid="project-classpath"/>
+            <arg value=""/>
+            <jvmarg value="-Xmx1024m"/>
+        </java>
+    </target>
+    <target name="compile">
+      	<javac compiler="modern" srcdir="${src}" encoding="UTF-8" destdir="${dest}" classpathref="project-classpath" listfiles="yes"/>
+    </target>
+</project>
