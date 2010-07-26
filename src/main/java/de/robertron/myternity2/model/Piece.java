@@ -4,20 +4,18 @@ import de.robertron.myternity2.ga.Copyable;
 import de.robertron.myternity2.ga.Gene;
 
 public class Piece
-		implements Gene, Copyable<Piece>, Cloneable {
-
-	private static final int directionCount = Direction.values().length;
+		implements Gene, Copyable<Piece> {
 
 	private final int[] map;
 	private final int id;
 
-	private Piece( final int north, final int west, final int south, final int east, final int id ) {
-		map = new int[directionCount];
+	private Piece( final int north, final int east, final int south, final int west, final int id ) {
+		this( id, new int[] { north, east, south, west } );
+	}
+
+	private Piece( int id, int[] map ) {
 		this.id = id;
-		map[Direction.NORTH.ordinal()] = north;
-		map[Direction.EAST.ordinal()] = east;
-		map[Direction.SOUTH.ordinal()] = south;
-		map[Direction.WEST.ordinal()] = west;
+		this.map = map;
 	}
 
 	public static Piece from( final int north, final int east, final int south, final int west,
@@ -44,11 +42,11 @@ public class Piece
 	}
 
 	public void rotate() {
-		final int south = get( Direction.SOUTH );
-		set( Direction.SOUTH, get( Direction.EAST ) );
-		set( Direction.EAST, get( Direction.NORTH ) );
-		set( Direction.NORTH, get( Direction.WEST ) );
-		set( Direction.WEST, south );
+		int i0 = map[0];
+		for ( int i = 1; i < map.length; i++ ) {
+			map[i - 1] = map[i];
+		}
+		map[map.length - 1] = i0;
 	}
 
 	@Override
@@ -58,11 +56,7 @@ public class Piece
 
 	@Override
 	public Piece copy() {
-		try {
-			return (Piece) clone();
-		} catch ( CloneNotSupportedException e ) {
-			throw new RuntimeException( e ); // can't occur
-		}
+		return new Piece( id, map.clone() );
 	}
 
 }
