@@ -18,7 +18,8 @@ public class GaUtil {
 	}
 
 	public static double random( final double min, final double max ) {
-		return min + Math.floor( Math.random() * ( max - min + 1 ) );
+		return min + (int) ( Math.random() * ( ( max - min ) + 1 ) );
+
 	}
 
 	public static double random( final double min, final double max, final int scale ) {
