@@ -6,7 +6,7 @@ public class GeneticAlgorithm {
 	private int runs;
 	private final int winningFitness;
 	private double crossoverFraction;
-	private final double crossoverProbability;
+	private double crossoverProbability;
 	private double mutationProbability;
 
 	public GeneticAlgorithm( final int winningFitness ) {
@@ -39,6 +39,10 @@ public class GeneticAlgorithm {
 
 	public void setCrossoverFraction( final double crossoverFraction ) {
 		this.crossoverFraction = crossoverFraction;
+	}
+
+	public void setCrossoverProbability( final double crossoverProbability ) {
+		this.crossoverProbability = crossoverProbability;
 	}
 
 	public void setMutationPropability( final double mutationPropability ) {
