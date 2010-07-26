@@ -113,11 +113,11 @@ public class Board
 	}
 
 	private Piece getWest( final int x, final int y ) {
-		if ( x == boardSize - 1 ) {
+		if ( x == 0 ) {
 			return null;
 		}
 
-		return pieces[y][x + 1];
+		return pieces[y][x - 1];
 	}
 
 	private Piece getSouth( final int x, final int y ) {
@@ -129,11 +129,11 @@ public class Board
 	}
 
 	private Piece getEast( final int x, final int y ) {
-		if ( x == 0 ) {
+		if ( x == boardSize - 1 ) {
 			return null;
 		}
 
-		return pieces[y][x - 1];
+		return pieces[y][x + 1];
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class Board
 	private void rotate() {
 		final int x = randomCoordinate();
 		final int y = randomCoordinate();
-		pieces[y][x].rotate();
+		pieces[y][x].rotate( (int) GaUtil.random( 1, 3 ) );
 
 	}
 

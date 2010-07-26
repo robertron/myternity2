@@ -13,7 +13,7 @@ public class Piece
 		this( id, new int[] { north, east, south, west } );
 	}
 
-	private Piece( int id, int[] map ) {
+	private Piece( final int id, final int[] map ) {
 		this.id = id;
 		this.map = map;
 	}
@@ -41,8 +41,14 @@ public class Piece
 		return map[direction.ordinal()];
 	}
 
-	public void rotate() {
-		int i0 = map[0];
+	public void rotate( final int steps ) {
+		for ( int step = 0; step < steps; step++ ) {
+			rotate();
+		}
+	}
+
+	private void rotate() {
+		final int i0 = map[0];
 		for ( int i = 1; i < map.length; i++ ) {
 			map[i - 1] = map[i];
 		}
