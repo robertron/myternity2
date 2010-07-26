@@ -5,15 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.robertron.myternity2.config.Configuration;
+import de.robertron.myternity2.config.Key;
 import de.robertron.myternity2.ga.Copyable;
 import de.robertron.myternity2.ga.GaUtil;
 import de.robertron.myternity2.ga.Individuum;
 
 public class Board
 		implements Individuum<Piece>, Copyable<Board> {
-
-	private static int REWARD_EDGE = 4;
-	private static int REWARD = 1;
 
 	private final Piece[][] pieces;
 	private final int boardSize;
@@ -93,13 +92,13 @@ public class Board
 		final int first = piece.get( direction );
 		if ( check == null ) {
 			if ( first == 0 ) {
-				return REWARD_EDGE;
+				return Configuration.getInt( Key.FITNESS_REWARDEDGE );
 			}
 			return 0;
 		}
 
 		if ( first == check.get( direction.getOpposite() ) ) {
-			return REWARD;
+			return Configuration.getInt( Key.FITNESS_REWARD );
 		}
 
 		return 0;

@@ -11,7 +11,9 @@ public enum Key {
 	GA_RUNS( "ga.runs" ),
 	GA_CROSSOVERFRACTION( "ga.crossoverFraction" ),
 	GA_MUTATIONPROBABILITY( "ga.mutationProbability" ),
-	GA_CROSSOVERPROBABILITY( "ga.crossoverProbability" );
+	GA_CROSSOVERPROBABILITY( "ga.crossoverProbability" ),
+	FITNESS_REWARD( "fitness.reward" ),
+	FITNESS_REWARDEDGE( "fitness.reward.edge" );
 
 	private final String key;
 
