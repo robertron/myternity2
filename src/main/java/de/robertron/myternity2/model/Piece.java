@@ -3,15 +3,17 @@ package de.robertron.myternity2.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.robertron.myternity2.ga.Copyable;
 import de.robertron.myternity2.ga.Gene;
 
 public class Piece
-		implements Gene {
+		implements Gene, Copyable<Piece> {
 
-	private final Map<Direction, Integer> map = new HashMap<Direction, Integer>();
+	private final Map<Direction, Integer> map;
 	private final int id;
 
 	private Piece( final int north, final int west, final int south, final int east, final int id ) {
+		map = new HashMap<Direction, Integer>();
 		this.id = id;
 		map.put( Direction.NORTH, north );
 		map.put( Direction.EAST, east );
@@ -57,6 +59,15 @@ public class Piece
 	@Override
 	public int getId() {
 		return this.id;
+	}
+
+	@Override
+	public Piece copy() {
+		final int north = map.get( Direction.NORTH );
+		final int east = map.get( Direction.EAST );
+		final int south = map.get( Direction.SOUTH );
+		final int west = map.get( Direction.WEST );
+		return new Piece( north, west, south, east, this.id );
 	}
 
 }

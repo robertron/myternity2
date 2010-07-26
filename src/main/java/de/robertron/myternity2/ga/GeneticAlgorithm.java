@@ -11,11 +11,11 @@ public class GeneticAlgorithm {
 
 	public GeneticAlgorithm( final int winningFitness ) {
 		this.winningFitness = winningFitness;
-		this.elite = 0;
-		this.runs = 10;
+		this.elite = 5;
+		this.runs = 200;
 		this.crossoverFraction = 0.4;
 		this.mutationProbability = 0.5;
-		this.crossoverProbability = 0.2;
+		this.crossoverProbability = 0.4;
 	}
 
 	public void evolution( final Population<?, ?> prototype ) {

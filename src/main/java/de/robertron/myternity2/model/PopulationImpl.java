@@ -37,11 +37,20 @@ public class PopulationImpl
 		int size = individuums.size();
 		if ( elite > 0 ) {
 			final List<Board> best = GaUtil.best( this.individuums, elite );
-			newIndividuums.addAll( best );
+
+			System.out.println( "ELITE BOARDS:" );
+			int i = 0;
+			for ( final Board board : best ) {
+				System.out.println( i + ". " + board.fitness() );
+				i++;
+			}
+
+			newIndividuums.addAll( GaUtil.copy( best ) );
 			size -= best.size();
 		}
 		while ( size > 0 ) {
-			newIndividuums.add( GaUtil.tournament( this.individuums, turnamentSize ) );
+			final Board tournament = GaUtil.tournament( this.individuums, turnamentSize );
+			newIndividuums.add( tournament.copy() );
 			size--;
 		}
 
@@ -70,9 +79,12 @@ public class PopulationImpl
 
 	@Override
 	public void cross( final double fraction, final double probability ) {
+		int count = 0;
 		for ( int i = 0; i < ( (int) ( individuums.size() * fraction ) & ~1 ); i += 2 ) {
 			cross( individuums.get( i ), individuums.get( i + 1 ), probability );
+			count++;
 		}
+		System.out.println( "CROSSOVER OPERATIONS: " + count );
 	}
 
 	private void cross( final Individuum<Piece> individuum1, final Individuum<Piece> individuum2,
@@ -91,9 +103,11 @@ public class PopulationImpl
 
 	@Override
 	public void mutate( final double mutationProbability ) {
+		int count = 0;
 		for ( final Individuum<Piece> individuum : this.individuums ) {
-			individuum.mutate( mutationProbability );
+			count += individuum.mutate( mutationProbability );
 		}
+		System.out.println( "MUTATIONS: " + count );
 	}
 
 	final boolean sane() {
@@ -108,7 +122,9 @@ public class PopulationImpl
 	@Override
 	public boolean finished( final int runs, final int winningFitness ) {
 		final int maximalFitness = GaUtil.maximalFitness( individuums );
-		System.out.println( "CHECK POPULATION: BEST: " + maximalFitness + " RUN: " + run );
+		System.out.println( "################################ RUN " + run
+				+ " ##########################################" );
+		System.out.println( "CHECK POPULATION: BEST: " + maximalFitness );
 
 		if ( !sane() || individuums.size() != popsize ) {
 			System.err.println( "ERROR: Population insane" );
@@ -125,6 +141,7 @@ public class PopulationImpl
 
 	public void log() {
 		int i = 0;
+		System.out.println( "\n##################### FINAL POPULATION ###################################" );
 		for ( final Board board : individuums ) {
 			System.out.println( "--------------------------------" );
 			System.out.println( "--- BOARD: " + i + " FITNESS: " + board.fitness() );

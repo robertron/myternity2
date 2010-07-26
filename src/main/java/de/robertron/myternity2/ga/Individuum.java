@@ -8,7 +8,7 @@ public interface Individuum<T extends Gene> {
 
 	int fitness();
 
-	void mutate( final double mutationProbability );
+	int mutate( final double mutationProbability );
 
 	List<T> cross( final List<T> genes );
 

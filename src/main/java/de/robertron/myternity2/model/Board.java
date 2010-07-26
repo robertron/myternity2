@@ -5,24 +5,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.robertron.myternity2.ga.Copyable;
 import de.robertron.myternity2.ga.GaUtil;
 import de.robertron.myternity2.ga.Individuum;
 
 public class Board
-		implements Individuum<Piece> {
+		implements Individuum<Piece>, Copyable<Board> {
+
+	private static int REWARD_EDGE = 4;
+	private static int REWARD = 1;
 
 	private final Piece[][] pieces;
 	private final int boardSize;
 	private int fitness;
 
-	private Board( final Piece[][] pieces, final int boardSize ) {
+	private Board( final Piece[][] pieces, final int boardSize, final int fitness ) {
 		this.pieces = pieces;
 		this.boardSize = boardSize;
-		this.fitness = 0;
+		this.fitness = fitness;
 	}
 
 	public static Board from( final Piece[][] pieces, final int boardSize ) {
-		return new Board( pieces, boardSize );
+		return new Board( pieces, boardSize, 0 );
 	}
 
 	public static Board from( final List<Piece> pieces, final int boardSize ) {
@@ -37,7 +41,7 @@ public class Board
 			result[i] = row;
 		}
 
-		return new Board( result, boardSize );
+		return new Board( result, boardSize, 0 ).copy();
 	}
 
 	@Override
@@ -77,23 +81,28 @@ public class Board
 
 	private int fitting( final Piece piece, final Piece north, final Piece south, final Piece east,
 			final Piece west ) {
-		final boolean n = check( piece, north, Direction.NORTH );
-		final boolean s = check( piece, south, Direction.SOUTH );
-		final boolean e = check( piece, east, Direction.EAST );
-		final boolean w = check( piece, west, Direction.WEST );
+		final int n = check( piece, north, Direction.NORTH );
+		final int s = check( piece, south, Direction.SOUTH );
+		final int e = check( piece, east, Direction.EAST );
+		final int w = check( piece, west, Direction.WEST );
 
-		if ( n && s && e && w ) {
-			return 1;
-		}
-		return 0;
+		return n + s + e + w;
 	}
 
-	private boolean check( final Piece piece, final Piece check, final Direction direction ) {
+	private int check( final Piece piece, final Piece check, final Direction direction ) {
 		final int first = piece.get( direction );
 		if ( check == null ) {
-			return first == 0;
+			if ( first == 0 ) {
+				return REWARD_EDGE;
+			}
+			return 0;
 		}
-		return first == check.get( direction.getOpposite() );
+
+		if ( first == check.get( direction.getOpposite() ) ) {
+			return REWARD;
+		}
+
+		return 0;
 	}
 
 	private Piece getNorth( final int x, final int y ) {
@@ -129,20 +138,20 @@ public class Board
 	}
 
 	@Override
-	public void mutate( final double probability ) {
+	public int mutate( final double probability ) {
 		if ( Math.random() >= probability )
-			return;
+			return 0;
 
+		int count = 0;
 		do {
-			if ( Math.random() > 0.5 ) {
-				changePositions();
-			} else {
-				rotate();
-			}
-
+			rotate();
+			count++;
 		} while ( Math.random() < probability );
+
+		return count;
 	}
 
+	@SuppressWarnings ( "unused" )
 	private void changePositions() {
 		final int x1 = randomCoordinate();
 		final int y1 = randomCoordinate();
@@ -175,7 +184,7 @@ public class Board
 				for ( final Piece piece : row ) {
 					if ( piece.getId() == change.getId() ) {
 						changed.add( pieces[y][x] );
-						pieces[y][x] = change;
+						pieces[y][x] = change.copy();
 					}
 					x++;
 				}
@@ -201,6 +210,22 @@ public class Board
 		}
 
 		return true;
+	}
+
+	@Override
+	public Board copy() {
+		final Piece[][] pieces = new Piece[boardSize][boardSize];
+		int i = 0;
+		for ( final Piece[] row : this.pieces ) {
+			int j = 0;
+			for ( final Piece piece : row ) {
+				pieces[i][j] = piece.copy();
+				j++;
+			}
+			i++;
+		}
+
+		return new Board( pieces, boardSize, fitness );
 	}
 
 }

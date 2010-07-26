@@ -1,5 +1,6 @@
 package de.robertron.myternity2.ga;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,7 +48,17 @@ public class GaUtil {
 	public static <K extends Gene, T extends Individuum<K>> List<T> best(
 			final List<T> individuums, final int n ) {
 		Collections.sort( individuums, new FITNESS_COMPARATOR() );
+		Collections.reverse( individuums );
 		return individuums.subList( 0, n );
 	}
 
+	public static <T extends Copyable<T>> List<T> copy( final List<T> copyList ) {
+		final List<T> result = new ArrayList<T>();
+
+		for ( final T element : copyList ) {
+			result.add( element.copy() );
+		}
+
+		return result;
+	}
 }

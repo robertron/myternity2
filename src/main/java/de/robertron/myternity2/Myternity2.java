@@ -12,8 +12,8 @@ public class Myternity2 {
 
 	public static void main( final String[] args ) {
 		final File file = new File( "etc/3x3.txt" );
-		final GeneticAlgorithm alg = new GeneticAlgorithm( 9 );
-		final Population<Piece, Board> population = new PopulationImpl( 3, 5, 10, file );
+		final GeneticAlgorithm alg = new GeneticAlgorithm( 100 );
+		final Population<Piece, Board> population = new PopulationImpl( 3, 5, 50, file );
 		alg.evolution( population );
 	}
 }
