@@ -203,14 +203,20 @@ public class Board
 	}
 
 	private void crossNormal() {
+		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSNORMAL ) )
+			return;
 		change( randomNormal(), randomNormal() );
 	}
 
 	private void crossBorder() {
+		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSBORDER ) )
+			return;
 		change( randomBorder(), randomBorder() );
 	}
 
 	private void crossCorner() {
+		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSCORNER ) )
+			return;
 		change( randomCorner(), randomCorner() );
 	}
 

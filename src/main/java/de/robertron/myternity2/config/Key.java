@@ -4,15 +4,18 @@ public enum Key {
 
 	MODEL_FILE( "model.file" ),
 	MODEL_BOARDSIZE( "model.boardsize" ),
-	GA_WINNINGFITNESS( "ga.winningFitness" ),
+	GA_WINNINGFITNESS( "ga.winning.fitness" ),
 	GA_POPULATION( "ga.population" ),
-	GA_TURNAMENTSIZE( "ga.turnamentSize" ),
+	GA_TURNAMENTSIZE( "ga.size.turnament" ),
 	GA_ELITE( "ga.elite" ),
 	GA_RUNS( "ga.runs" ),
-	GA_CROSSOVERFRACTION( "ga.crossoverFraction" ),
-	GA_MUTATIONPROBABILITY( "ga.mutationProbability" ),
-	GA_CROSSOVERPROBABILITY( "ga.crossoverProbability" ),
+	GA_CROSSOVERFRACTION( "ga.fraction.crossover" ),
+	GA_MUTATIONPROBABILITY( "ga.probability.mutation" ),
+	GA_CROSSOVERPROBABILITY( "ga.probability.crossover" ),
 	GA_SAVEELITEIN( "ga.save.elite.in" ),
+	GA_CROSSBORDER( "ga.probability.crossover.border" ),
+	GA_CROSSNORMAL( "ga.probability.crossover.normal" ),
+	GA_CROSSCORNER( "ga.probability.crossover.corner" ),
 	FITNESS_REWARD( "fitness.reward" ),
 	FITNESS_REWARDEDGE( "fitness.reward.edge" );
 
