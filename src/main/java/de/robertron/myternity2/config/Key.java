@@ -12,6 +12,7 @@ public enum Key {
 	GA_CROSSOVERFRACTION( "ga.crossoverFraction" ),
 	GA_MUTATIONPROBABILITY( "ga.mutationProbability" ),
 	GA_CROSSOVERPROBABILITY( "ga.crossoverProbability" ),
+	GA_SAVEELITEIN( "ga.save.elite.in" ),
 	FITNESS_REWARD( "fitness.reward" ),
 	FITNESS_REWARDEDGE( "fitness.reward.edge" );
 

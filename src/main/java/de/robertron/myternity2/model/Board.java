@@ -1,6 +1,8 @@
 package de.robertron.myternity2.model;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,25 +24,58 @@ public class Board
 		this.pieces = pieces;
 		this.boardSize = boardSize;
 		this.fitness = fitness;
-	}
-
-	public static Board from( final Piece[][] pieces, final int boardSize ) {
-		return new Board( pieces, boardSize, 0 );
+		arrange();
 	}
 
 	public static Board from( final List<Piece> pieces, final int boardSize ) {
-		final Piece[][] result = new Piece[boardSize][];
 
-		int count = 0;
+		final Deque<Piece> corners = new ArrayDeque<Piece>();
+		final Deque<Piece> borders = new ArrayDeque<Piece>();
+		final Deque<Piece> normal = new ArrayDeque<Piece>();
+
+		for ( final Piece piece : pieces ) {
+			switch ( piece.getType() ) {
+				case NORMAL:
+					normal.add( piece );
+					break;
+				case BORDER:
+					borders.add( piece );
+					break;
+				case CORNER:
+					corners.add( piece );
+					break;
+			}
+		}
+
+		return new Board( create( boardSize, corners, borders, normal ), boardSize, 0 ).copy();
+	}
+
+	private static Piece[][] create( final int boardSize, final Deque<Piece> corners,
+			final Deque<Piece> borders, final Deque<Piece> normal ) {
+		final Piece[][] result = new Piece[boardSize][];
 		for ( int i = 0; i < boardSize; i++ ) {
 			final Piece[] row = new Piece[boardSize];
 			for ( int j = 0; j < boardSize; j++ ) {
-				row[j] = pieces.get( count++ );
+				if ( isCorner( i, j, boardSize ) ) {
+					row[j] = corners.pop();
+				} else if ( isBorder( i, j, boardSize ) ) {
+					row[j] = borders.pop();
+				} else {
+					row[j] = normal.pop();
+				}
 			}
 			result[i] = row;
 		}
+		return result;
+	}
 
-		return new Board( result, boardSize, 0 ).copy();
+	private static boolean isBorder( final int x, final int y, final int boardSize ) {
+		return x == 0 || x == boardSize - 1 || y == 0 || y == boardSize - 1;
+	}
+
+	private static boolean isCorner( final int x, final int y, final int boardsize ) {
+		return ( x == 0 && y == 0 ) || ( x == 0 && y == boardsize - 1 )
+				|| ( x == boardsize - 1 && y == 0 ) || ( x == boardsize - 1 && y == boardsize - 1 );
 	}
 
 	@Override
@@ -75,7 +110,6 @@ public class Board
 		}
 
 		this.fitness = fitness;
-
 	}
 
 	private int fitting( final Piece piece, final Piece north, final Piece south, final Piece east,
@@ -150,21 +184,81 @@ public class Board
 		return count;
 	}
 
-	@SuppressWarnings ( "unused" )
-	private void changePositions() {
-		final int x1 = randomCoordinate();
-		final int y1 = randomCoordinate();
-		final int x2 = randomCoordinate();
-		final int y2 = randomCoordinate();
-		final Piece piece = pieces[y1][x1];
-		pieces[y1][x1] = pieces[y2][x2];
-		pieces[y2][x2] = piece;
+	private void arrange() {
+		int y = 0;
+		for ( final Piece[] row : pieces ) {
+			int x = 0;
+			for ( final Piece piece : row ) {
+				if ( piece.getType() == PieceType.CORNER ) {
+					rotateCorner( x, y, piece );
+				} else if ( piece.getType() == PieceType.BORDER ) {
+					rotateBorder( x, y, piece );
+				}
+				x++;
+			}
+			y++;
+		}
+	}
+
+	private void rotateCorner( final int x, final int y, final Piece piece ) {
+		if ( x == 0 && y == 0 ) {
+			rotateBorder( piece, Direction.NORTH, Direction.WEST );
+		}
+		if ( x == 0 && y == boardSize - 1 ) {
+			rotateBorder( piece, Direction.SOUTH, Direction.WEST );
+		}
+		if ( y == 0 && x == boardSize - 1 ) {
+			rotateBorder( piece, Direction.NORTH, Direction.EAST );
+		}
+		if ( y == boardSize - 1 && x == boardSize - 1 ) {
+			rotateBorder( piece, Direction.SOUTH, Direction.EAST );
+		}
+	}
+
+	private void rotateBorder( final int x, final int y, final Piece piece ) {
+		if ( x == 0 ) {
+			rotateBorder( piece, Direction.WEST );
+		}
+		if ( x == boardSize - 1 ) {
+			rotateBorder( piece, Direction.EAST );
+		}
+		if ( y == 0 ) {
+			rotateBorder( piece, Direction.NORTH );
+		}
+		if ( y == boardSize - 1 ) {
+			rotateBorder( piece, Direction.SOUTH );
+		}
+	}
+
+	private void rotateBorder( final Piece piece, final Direction... directions ) {
+		if ( borderSum( piece, directions ) == 0 ) {
+			return;
+		}
+
+		for ( int i = 0; i < 3; i++ ) {
+			piece.rotate( 1 );
+			if ( borderSum( piece, directions ) == 0 ) {
+				return;
+			}
+		}
+		throw new IllegalStateException( "NO BORDER OR CORNER!!" );
+	}
+
+	private int borderSum( final Piece piece, final Direction... directions ) {
+		int count = 0;
+		for ( final Direction direction : directions ) {
+			count += piece.get( direction );
+		}
+		return count;
 	}
 
 	private void rotate() {
 		final int x = randomCoordinate();
 		final int y = randomCoordinate();
-		pieces[y][x].rotate( (int) GaUtil.random( 1, 3 ) );
+		final Piece piece = pieces[y][x];
+		if ( piece.getType() == PieceType.NORMAL ) {
+			piece.rotate( (int) GaUtil.random( 1, 3 ) );
+		}
 
 	}
 
@@ -190,6 +284,8 @@ public class Board
 				y++;
 			}
 		}
+
+		arrange();
 		return changed;
 	}
 

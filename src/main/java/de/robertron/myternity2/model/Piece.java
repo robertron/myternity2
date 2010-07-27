@@ -8,6 +8,7 @@ public class Piece
 
 	private final int[] map;
 	private final int id;
+	private final PieceType type;
 
 	private Piece( final int north, final int east, final int south, final int west, final int id ) {
 		this( id, new int[] { north, east, south, west } );
@@ -16,6 +17,7 @@ public class Piece
 	private Piece( final int id, final int[] map ) {
 		this.id = id;
 		this.map = map;
+		this.type = PieceType.from( map );
 	}
 
 	public static Piece from( final int north, final int east, final int south, final int west,
@@ -39,6 +41,10 @@ public class Piece
 
 	public int get( final Direction direction ) {
 		return map[direction.ordinal()];
+	}
+
+	public PieceType getType() {
+		return type;
 	}
 
 	public void rotate( final int steps ) {

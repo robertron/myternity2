@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import de.robertron.myternity2.config.Configuration;
+import de.robertron.myternity2.config.Key;
 import de.robertron.myternity2.ga.GaUtil;
 import de.robertron.myternity2.ga.Individuum;
 import de.robertron.myternity2.ga.Population;
@@ -20,6 +23,8 @@ public class PopulationImpl
 	private List<Board> individuums;
 	private int run;
 	private final int popsize;
+	private final int maxFitness;
+	private Date timestamp;
 
 	public PopulationImpl( final int boardSize, final int turnamentSize, final int popsize,
 			final File file ) {
@@ -29,6 +34,7 @@ public class PopulationImpl
 		this.boardSize = boardSize;
 		this.individuums = new ArrayList<Board>();
 		run = 0;
+		maxFitness = maximalFitness();
 	}
 
 	@Override
@@ -67,6 +73,7 @@ public class PopulationImpl
 				individuums.add( Board.from( pieces, boardSize ) );
 			}
 			this.run = 0;
+			this.timestamp = new Date();
 			return this;
 
 		} catch ( final FileNotFoundException e ) {
@@ -110,29 +117,28 @@ public class PopulationImpl
 		System.out.println( "MUTATIONS: " + count );
 	}
 
-	final boolean sane() {
-		for ( final Board board : individuums ) {
-			if ( !board.sane() ) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	public boolean finished( final int runs, final int winningFitness ) {
-		final int maximalFitness = GaUtil.maximalFitness( individuums );
+
+		final int winner = getWinningFitness( winningFitness );
+
+		final int best = GaUtil.bestFitness( individuums );
 		System.out.println( "################################ RUN " + run
 				+ " ##########################################" );
-		System.out.println( "CHECK POPULATION: BEST: " + maximalFitness );
+		System.out.println( "CHECK POPULATION: BEST: " + best + "/" + maxFitness );
 
 		if ( !sane() || individuums.size() != popsize ) {
 			System.err.println( "ERROR: Population insane" );
 			return true;
 		}
 
-		if ( run > runs || maximalFitness >= winningFitness ) {
+		if ( run % Configuration.getInt( Key.GA_SAVEELITEIN ) == 0 ) {
+			Converter.saveBoards( GaUtil.best( this.individuums, 10 ), timestamp, run );
 			log();
+		}
+
+		if ( ( run > runs && runs > 0 ) || best >= winner ) {
+			Converter.saveBoards( GaUtil.best( this.individuums, 10 ), timestamp, run );
 			return true;
 		}
 
@@ -156,6 +162,32 @@ public class PopulationImpl
 		for ( final Individuum<Piece> individuum : this.individuums ) {
 			individuum.calculate();
 		}
+	}
+
+	private int getWinningFitness( final int winningFitness ) {
+		int winner;
+		if ( winningFitness <= 0 || winningFitness > maxFitness ) {
+			winner = maxFitness;
+		} else {
+			winner = winningFitness;
+		}
+		return winner;
+	}
+
+	private int maximalFitness() {
+		final int total = boardSize * boardSize * Configuration.getInt( Key.FITNESS_REWARD ) * 4;
+		final int subBorders = boardSize * 4 * Configuration.getInt( Key.FITNESS_REWARD );
+		final int extraBorder = boardSize * 4 * Configuration.getInt( Key.FITNESS_REWARDEDGE );
+		return total - subBorders + extraBorder;
+	}
+
+	private boolean sane() {
+		for ( final Board board : individuums ) {
+			if ( !board.sane() ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

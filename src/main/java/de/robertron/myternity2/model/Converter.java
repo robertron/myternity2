@@ -2,18 +2,45 @@ package de.robertron.myternity2.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class Converter {
 
+	private static SimpleDateFormat FORMAT = new SimpleDateFormat( "yyyyMMddHHmmss" );
+
+	public static void saveBoard( final String path, final String file, final Board board ) {
+		try {
+			new File( path ).mkdirs();
+			final FileOutputStream stream = new FileOutputStream( new File( path + "/" + file ) );
+			stream.write( board.toString().getBytes() );
+		} catch ( final FileNotFoundException e ) {
+			e.printStackTrace();
+		} catch ( final IOException e ) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveBoards( final List<Board> best, final Date timestamp, final int run ) {
+		int i = 0;
+		for ( final Board board : best ) {
+			final String path = "model/" + FORMAT.format( timestamp ) + "/" + run;
+			final String file = i + "_model.txt";
+			saveBoard( path, file, board );
+			i++;
+		}
+	}
+
 	public static Board loadBoard( final File file, final int size )
 			throws FileNotFoundException, IOException {
-		return Board.from( load( file, size ), size );
+		return Board.from( loadPieces( file, size ), size );
 	}
 
 	public static List<Piece> loadPieces( final File file, final int size )
@@ -68,4 +95,5 @@ public class Converter {
 		return pieces;
 
 	}
+
 }

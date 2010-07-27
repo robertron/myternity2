@@ -40,7 +40,7 @@ public class GaUtil {
 		return best;
 	}
 
-	public static <K extends Gene, T extends Individuum<K>> int maximalFitness(
+	public static <K extends Gene, T extends Individuum<K>> int bestFitness(
 			final List<T> individuums ) {
 		final T individuum = Collections.max( individuums, new FITNESS_COMPARATOR() );
 		return individuum.fitness();
