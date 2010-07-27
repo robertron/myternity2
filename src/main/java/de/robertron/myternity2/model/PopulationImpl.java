@@ -42,15 +42,8 @@ public class PopulationImpl
 		final List<Board> newIndividuums = new ArrayList<Board>();
 		int size = individuums.size();
 		if ( elite > 0 ) {
+			logBest();
 			final List<Board> best = GaUtil.best( this.individuums, elite );
-
-			System.out.println( "ELITE BOARDS:" );
-			int i = 0;
-			for ( final Board board : best ) {
-				System.out.println( i + ". " + board.fitness() );
-				i++;
-			}
-
 			newIndividuums.addAll( GaUtil.copy( best ) );
 			size -= best.size();
 		}
@@ -62,6 +55,16 @@ public class PopulationImpl
 
 		run++;
 		individuums = newIndividuums;
+	}
+
+	private void logBest() {
+		final List<Board> best = GaUtil.best( this.individuums, 15 );
+		System.out.println( "BEST OF BOARDS:" );
+		int i = 0;
+		for ( final Board board : best ) {
+			System.out.println( i + ". " + board.fitness() );
+			i++;
+		}
 	}
 
 	@Override
@@ -87,25 +90,10 @@ public class PopulationImpl
 	@Override
 	public void cross( final double fraction, final double probability ) {
 		int count = 0;
-		for ( int i = 0; i < ( (int) ( individuums.size() * fraction ) & ~1 ); i += 2 ) {
-			cross( individuums.get( i ), individuums.get( i + 1 ), probability );
-			count++;
+		for ( final Board individuum : this.individuums ) {
+			count += individuum.cross( probability );
 		}
-		System.out.println( "CROSSOVER OPERATIONS: " + count );
-	}
-
-	private void cross( final Individuum<Piece> individuum1, final Individuum<Piece> individuum2,
-			final double probability ) {
-		final List<Piece> change = new ArrayList<Piece>();
-		final List<Piece> genes = individuum1.getGenes();
-		for ( int i = 0; i < genes.size(); i++ ) {
-			if ( Math.random() <= probability ) {
-				change.add( genes.get( i ) );
-			}
-		}
-
-		final List<Piece> cross = individuum1.cross( change );
-		individuum2.cross( cross );
+		System.out.println( "CROSSOVER: " + count );
 	}
 
 	@Override
@@ -147,7 +135,7 @@ public class PopulationImpl
 
 	public void log() {
 		int i = 0;
-		System.out.println( "\n##################### FINAL POPULATION ###################################" );
+		System.out.println( "\n##################### POPULATION ###################################" );
 		for ( final Board board : individuums ) {
 			System.out.println( "--------------------------------" );
 			System.out.println( "--- BOARD: " + i + " FITNESS: " + board.fitness() );

@@ -1,7 +1,6 @@
 package de.robertron.myternity2.model;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -184,6 +183,49 @@ public class Board
 		return count;
 	}
 
+	public int cross( final double probability ) {
+		if ( Math.random() >= probability )
+			return 0;
+
+		int count = 0;
+		do {
+			cross();
+			count++;
+		} while ( Math.random() < probability );
+
+		return count;
+	}
+
+	private void cross() {
+		crossCorner();
+		crossBorder();
+		crossNormal();
+	}
+
+	private void crossNormal() {
+		change( randomNormal(), randomNormal() );
+	}
+
+	private void crossBorder() {
+		change( randomBorder(), randomBorder() );
+	}
+
+	private void crossCorner() {
+		change( randomCorner(), randomCorner() );
+	}
+
+	private void change( final Coordinate coord1, final Coordinate coord2 ) {
+		final Piece piece = pieces[coord1.getY()][coord1.getX()];
+		final Piece piece2 = pieces[coord2.getY()][coord2.getX()];
+
+		if ( piece.getType() != piece2.getType() ) {
+			throw new IllegalArgumentException( "Versuche " + piece.getType() + " mit "
+					+ piece2.getType() + " zu tauschen." );
+		}
+		pieces[coord1.getY()][coord1.getX()] = pieces[coord2.getY()][coord2.getX()];
+		pieces[coord2.getY()][coord2.getX()] = piece;
+	}
+
 	private void arrange() {
 		int y = 0;
 		for ( final Piece[] row : pieces ) {
@@ -253,40 +295,50 @@ public class Board
 	}
 
 	private void rotate() {
-		final int x = randomCoordinate();
-		final int y = randomCoordinate();
-		final Piece piece = pieces[y][x];
+		final Coordinate c = randomNormal();
+		final Piece piece = pieces[c.getY()][c.getX()];
 		if ( piece.getType() == PieceType.NORMAL ) {
 			piece.rotate( (int) GaUtil.random( 1, 3 ) );
 		}
-
 	}
 
-	private int randomCoordinate() {
-		return (int) GaUtil.random( 0, boardSize - 1 );
+	private Coordinate randomNormal() {
+		final int x = (int) GaUtil.random( 1, boardSize - 2 );
+		final int y = (int) GaUtil.random( 1, boardSize - 2 );
+		return Coordinate.from( x, y );
 	}
 
-	@Override
-	public List<Piece> cross( final List<Piece> genes ) {
-		final List<Piece> changed = new ArrayList<Piece>();
+	private Coordinate randomCorner() {
+		return directionCoordinate( 0, randomDirection() );
+	}
 
-		for ( final Piece change : genes ) {
-			int y = 0;
-			for ( final Piece[] row : pieces ) {
-				int x = 0;
-				for ( final Piece piece : row ) {
-					if ( piece.getId() == change.getId() ) {
-						changed.add( pieces[y][x] );
-						pieces[y][x] = change.copy();
-					}
-					x++;
-				}
-				y++;
+	private Coordinate randomBorder() {
+		final int number = (int) GaUtil.random( 1, boardSize - 2 );
+		return directionCoordinate( number, randomDirection() );
+	}
+
+	private Coordinate directionCoordinate( final int number, final Direction d ) {
+		switch ( d ) {
+			case NORTH:
+				return Coordinate.from( number, 0 );
+			case SOUTH:
+				return Coordinate.from( number, boardSize - 1 );
+			case WEST:
+				return Coordinate.from( 0, number );
+			case EAST:
+				return Coordinate.from( boardSize - 1, number );
+		}
+		return null;
+	}
+
+	private Direction randomDirection() {
+		final int ordinal = (int) GaUtil.random( 0, 3 );
+		for ( final Direction direction : Direction.values() ) {
+			if ( direction.ordinal() == ordinal ) {
+				return direction;
 			}
 		}
-
-		arrange();
-		return changed;
+		throw new IllegalStateException();
 	}
 
 	@Override
