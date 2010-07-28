@@ -73,8 +73,8 @@ public class Board
 	}
 
 	private static boolean isCorner( final int x, final int y, final int boardsize ) {
-		return ( x == 0 && y == 0 ) || ( x == 0 && y == boardsize - 1 )
-				|| ( x == boardsize - 1 && y == 0 ) || ( x == boardsize - 1 && y == boardsize - 1 );
+		return x == 0 && y == 0 || x == 0 && y == boardsize - 1 || x == boardsize - 1 && y == 0
+				|| x == boardsize - 1 && y == boardsize - 1;
 	}
 
 	@Override
@@ -171,8 +171,9 @@ public class Board
 
 	@Override
 	public int mutate( final double probability ) {
-		if ( Math.random() >= probability )
+		if ( Math.random() >= probability ) {
 			return 0;
+		}
 
 		int count = 0;
 		do {
@@ -184,40 +185,31 @@ public class Board
 	}
 
 	public int cross( final double probability ) {
-		if ( Math.random() >= probability )
-			return 0;
-
 		int count = 0;
-		do {
-			cross();
-			count++;
-		} while ( Math.random() < probability );
+		for ( int y = 0; y < boardSize - 1; y++ ) {
+			for ( int x = 0; x < boardSize - 1; x++ ) {
+				if ( Math.random() < probability ) {
+					cross( this.pieces[y][x], Coordinate.from( x, y ) );
+					count++;
+				}
+			}
+		}
 
 		return count;
 	}
 
-	private void cross() {
-		crossCorner();
-		crossBorder();
-		crossNormal();
-	}
-
-	private void crossNormal() {
-		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSNORMAL ) )
-			return;
-		change( randomNormal(), randomNormal() );
-	}
-
-	private void crossBorder() {
-		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSBORDER ) )
-			return;
-		change( randomBorder(), randomBorder() );
-	}
-
-	private void crossCorner() {
-		if ( Math.random() >= Configuration.getDouble( Key.GA_CROSSCORNER ) )
-			return;
-		change( randomCorner(), randomCorner() );
+	private void cross( final Piece piece, final Coordinate coordinate ) {
+		switch ( piece.getType() ) {
+			case NORMAL:
+				change( coordinate, randomNormal() );
+				break;
+			case BORDER:
+				change( coordinate, randomBorder() );
+				break;
+			case CORNER:
+				change( coordinate, randomCorner() );
+				break;
+		}
 	}
 
 	private void change( final Coordinate coord1, final Coordinate coord2 ) {

@@ -13,9 +13,6 @@ public enum Key {
 	GA_MUTATIONPROBABILITY( "ga.probability.mutation" ),
 	GA_CROSSOVERPROBABILITY( "ga.probability.crossover" ),
 	GA_SAVEELITEIN( "ga.save.elite.in" ),
-	GA_CROSSBORDER( "ga.probability.crossover.border" ),
-	GA_CROSSNORMAL( "ga.probability.crossover.normal" ),
-	GA_CROSSCORNER( "ga.probability.crossover.corner" ),
 	FITNESS_REWARD( "fitness.reward" ),
 	FITNESS_REWARDEDGE( "fitness.reward.edge" );
 

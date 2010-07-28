@@ -90,10 +90,11 @@ public class PopulationImpl
 	@Override
 	public void cross( final double fraction, final double probability ) {
 		int count = 0;
-		for ( final Board individuum : this.individuums ) {
-			count += individuum.cross( probability );
+		Collections.shuffle( this.individuums );
+		for ( int i = 0; i < ( (int) ( 100 * fraction ) & ~1 ); i++ ) {
+			count += this.individuums.get( i ).cross( probability );
 		}
-		System.out.println( "CROSSOVER: " + count );
+		System.out.println( "CROSSOVER: OPERATIONS: " + count );
 	}
 
 	@Override
@@ -102,7 +103,7 @@ public class PopulationImpl
 		for ( final Individuum<Piece> individuum : this.individuums ) {
 			count += individuum.mutate( mutationProbability );
 		}
-		System.out.println( "MUTATIONS: " + count );
+		System.out.println( "MUTATION: OPERATIONS: " + count );
 	}
 
 	@Override
@@ -122,10 +123,10 @@ public class PopulationImpl
 
 		if ( run % Configuration.getInt( Key.GA_SAVEELITEIN ) == 0 ) {
 			Converter.saveBoards( GaUtil.best( this.individuums, 10 ), timestamp, run );
-			log();
+			log( 5 );
 		}
 
-		if ( ( run > runs && runs > 0 ) || best >= winner ) {
+		if ( run > runs && runs > 0 || best >= winner ) {
 			Converter.saveBoards( GaUtil.best( this.individuums, 10 ), timestamp, run );
 			return true;
 		}
@@ -133,10 +134,11 @@ public class PopulationImpl
 		return false;
 	}
 
-	public void log() {
+	public void log( final int best ) {
 		int i = 0;
-		System.out.println( "\n##################### POPULATION ###################################" );
-		for ( final Board board : individuums ) {
+		System.out.println( "\n##################### POPULATION OVERVIEW (BEST: " + best
+				+ " ) ###################################" );
+		for ( final Board board : GaUtil.best( this.individuums, best ) ) {
 			System.out.println( "--------------------------------" );
 			System.out.println( "--- BOARD: " + i + " FITNESS: " + board.fitness() );
 			System.out.println( "--------------------------------" );
