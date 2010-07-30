@@ -16,8 +16,8 @@ public class Myternity2 {
 
 		final File file = new File( Configuration.getString( Key.MODEL_FILE ) );
 
-		final GeneticAlgorithm alg = new GeneticAlgorithm(
-				Configuration.getInt( Key.GA_WINNINGFITNESS ) );
+		final GeneticAlgorithm alg = new GeneticAlgorithm();
+		alg.setWinningFitness( Configuration.getInt( Key.GA_WINNINGFITNESS ) );
 		alg.setCrossoverFraction( Configuration.getDouble( Key.GA_CROSSOVERFRACTION ) );
 		alg.setCrossoverProbability( Configuration.getDouble( Key.GA_CROSSOVERPROBABILITY ) );
 		alg.setElite( Configuration.getInt( Key.GA_ELITE ) );

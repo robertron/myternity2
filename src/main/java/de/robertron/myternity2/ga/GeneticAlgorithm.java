@@ -4,15 +4,15 @@ public class GeneticAlgorithm {
 
 	private int elite;
 	private int runs;
-	private final int winningFitness;
+	private int winningFitness;
 	private double crossoverFraction;
 	private double crossoverProbability;
 	private double mutationProbability;
 
-	public GeneticAlgorithm( final int winningFitness ) {
-		this.winningFitness = winningFitness;
+	public GeneticAlgorithm() {
+		this.winningFitness = -1;
 		this.elite = 2;
-		this.runs = 2000;
+		this.runs = 200;
 		this.crossoverFraction = 0.2;
 		this.mutationProbability = 0.3;
 		this.crossoverProbability = 0.2;
@@ -47,6 +47,10 @@ public class GeneticAlgorithm {
 
 	public void setMutationPropability( final double mutationPropability ) {
 		this.mutationProbability = mutationPropability;
+	}
+
+	public void setWinningFitness( final int winningFitness ) {
+		this.winningFitness = winningFitness;
 	}
 
 }

@@ -58,13 +58,15 @@ public class PopulationImpl
 	}
 
 	private void logBest() {
-		final List<Board> best = GaUtil.best( this.individuums, 15 );
+		final List<Board> best = GaUtil.best( this.individuums, 5 );
 		System.out.println( "BEST OF BOARDS:" );
 		int i = 0;
+		final StringBuilder builder = new StringBuilder();
 		for ( final Board board : best ) {
-			System.out.println( i + ". " + board.fitness() );
+			builder.append( i + ". " + board.fitness() ).append( " " );
 			i++;
 		}
+		System.out.println( builder.toString() );
 	}
 
 	@Override
